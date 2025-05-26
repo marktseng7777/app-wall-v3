@@ -13,7 +13,7 @@ export default function AppCard({ name, url, icon }: AppCardProps) {
         onError={(e) => (e.currentTarget.src = '/fallback.png')}
         className="w-[192px] h-[192px] rounded-xl mx-auto shadow-md object-cover"
       />
-      <h3 className="text-center mt-2 text-lg font-semibold text-white">{name}</h3>
+      <h3 className="text-center mt-2 text-lg font-semibold text-white no-underline">{name}</h3>
       <div className="block mt-4 text-center bg-white text-black hover:bg-gray-300 rounded-lg py-2 transition-colors no-underline">
         下載
       </div>
