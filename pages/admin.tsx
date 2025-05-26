@@ -93,7 +93,7 @@ export default function AdminPage() {
         {apps.map(app => (
           <li key={app.id} className="border p-4 rounded-lg">
             <div className="flex items-center space-x-4">
-              <img src={app.icon} alt={app.name} className="w-12 h-12 rounded" />
+              <img src={app.icon} alt={app.name} className="w-12 h-12 rounded shadow" />
               <div className="flex-1">
                 <p className="font-bold">{app.name}</p>
                 <a href={app.url} className="text-blue-600 text-sm" target="_blank" rel="noopener noreferrer">{app.url}</a>

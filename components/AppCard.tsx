@@ -7,7 +7,7 @@ interface AppCardProps {
 export default function AppCard({ name, url, icon }: AppCardProps) {
   return (
     <div className="border rounded-2xl p-4 shadow mb-4 bg-white">
-      <img src={icon} alt={name} className="w-20 h-20 rounded-xl mx-auto" />
+      <img src={icon} alt={name} className="w-20 h-20 rounded-xl mx-auto shadow-md" />
       <h3 className="text-center mt-2 text-lg font-semibold">{name}</h3>
       <a
         href={url}

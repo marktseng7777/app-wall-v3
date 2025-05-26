@@ -28,14 +28,17 @@ export default function Home() {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   if (!isMobile) {
-    return <p className="text-center mt-20 text-gray-500">請使用手機裝置瀏覽此頁面</p>;
+    return <p className="text-center mt-20 text-gray-500">请使用手机设备浏览此页面</p>;
   }
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      {apps.map(app => (
-        <AppCard key={app.id} {...app} />
-      ))}
+    <div className="min-h-screen bg-gradient-to-b from-blue-100 via-white to-pink-100 py-6 px-4">
+      <h1 className="text-2xl font-bold text-center mb-6 text-blue-700">🔥 热门 App 精选墙 🔥</h1>
+      <div className="grid grid-cols-2 gap-4">
+        {apps.map(app => (
+          <AppCard key={app.id} {...app} />
+        ))}
+      </div>
     </div>
   );
 }
