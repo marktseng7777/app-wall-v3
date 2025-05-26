@@ -1,0 +1,29 @@
+
+> app-wall@1.0.0 build
+> next build
+
+   ▲ Next.js 15.3.2
+
+   Linting and checking validity of types ...
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 0ms
+   Collecting page data ...
+   Generating static pages (0/4) ...
+   Generating static pages (1/4) 
+   Generating static pages (2/4) 
+   Generating static pages (3/4) 
+ ✓ Generating static pages (4/4)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (pages)                                Size  First Load JS
+┌ ○ /                                       858 B        92.8 kB
+├ ○ /404                                  2.47 kB        94.4 kB
+└ ○ /admin                                1.67 kB        93.6 kB
++ First Load JS shared by all             91.9 kB
+  ├ chunks/framework-2f335d22a7318891.js  57.7 kB
+  ├ chunks/main-4c23680d4b230a3e.js         32 kB
+  └ other shared chunks (total)           2.23 kB
+
+○  (Static)  prerendered as static content
+
