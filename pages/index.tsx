@@ -39,7 +39,7 @@ export default function Home() {
       {loading ? (
         <p className="text-center text-gray-400">正在載入 App 清單...</p>
       ) : (
-        <div className="flex flex-wrap gap-4 justify-center">
+        <div className="flex flex-wrap gap-4 justify-between">
           {apps.map(app => (
             <div key={app.id} className="w-[48%]">
               <a href={app.url} target="_blank" rel="noopener noreferrer">
