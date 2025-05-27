@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -6,106 +7,122 @@ interface AppItem {
   name: string;
   url: string;
   icon: string;
-  createdAt: string;
   updatedAt: string;
 }
 
-export default function AdminPage() {
+interface SourceOption {
+  key: string;
+  label: string;
+  binId: string;
+}
+
+const MASTER_KEY = '$2a$10$aIekbx96Mq.yKSA22FzLse2LHFypzqYOo2o63Rd/aLRDV1U5Cw/nq';
+
+const sources: SourceOption[] = [
+  { key: 'source-a', label: '聯盟 A 流量', binId: '6834589e8960c979a5a1462a' },
+  { key: 'source-b', label: '聯盟 B 流量', binId: '683488908960c979a5a157eb' },
+  { key: 'source-c', label: 'TikTok 測試', binId: '6834889d8a456b7966a59913' }
+];
+
+export default function Admin() {
+  const [selected, setSelected] = useState(sources[0]);
   const [apps, setApps] = useState<AppItem[]>([]);
-  const [form, setForm] = useState({ name: '', url: '', icon: '' });
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const API_URL = 'https://api.jsonbin.io/v3/b/6834589e8960c979a5a1462a';
-  const API_KEY = '$2a$10$aIekbx96Mq.yKSA22FzLse2LHFypzqYOo2o63Rd/aLRDV1U5Cw/nq';
+  useEffect(() => {
+    fetchData(selected.binId);
+  }, [selected]);
 
-  const fetchApps = async () => {
-    const res = await fetch(API_URL, { headers: { 'X-Master-Key': API_KEY } });
+  const fetchData = async (binId: string) => {
+    setLoading(true);
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+      headers: { 'X-Master-Key': MASTER_KEY }
+    });
     const data = await res.json();
-    const sorted = [...(data.record || [])].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-    setApps(sorted);
+    setApps(data.record || []);
+    setLoading(false);
   };
 
-  const saveApps = async (newApps: AppItem[]) => {
-    const sorted = [...newApps].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
-    await fetch(API_URL, {
+  const updateField = (id: string, field: keyof AppItem, value: string) => {
+    setApps(prev =>
+      prev.map(app => (app.id === id ? { ...app, [field]: value, updatedAt: new Date().toISOString() } : app))
+    );
+  };
+
+  const addApp = () => {
+    setApps(prev => [
+      ...prev,
+      { id: uuidv4(), name: '新 App', url: '', icon: '', updatedAt: new Date().toISOString() }
+    ]);
+  };
+
+  const removeApp = (id: string) => {
+    setApps(prev => prev.filter(app => app.id !== id));
+  };
+
+  const saveApps = async () => {
+    await fetch(`https://api.jsonbin.io/v3/b/${selected.binId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'X-Master-Key': API_KEY,
+        'X-Master-Key': MASTER_KEY,
+        'X-Bin-Private': 'false'
       },
-      body: JSON.stringify(sorted),
+      body: JSON.stringify(apps)
     });
-    setApps(sorted);
+    alert('已儲存到 ' + selected.label);
   };
-
-  const handleAddOrUpdate = () => {
-    if (!form.name.trim() || !form.url.trim() || !form.icon.trim()) return;
-    const now = new Date().toISOString();
-    if (editingId) {
-      const updated = apps.map(app =>
-        app.id === editingId
-          ? { ...app, name: form.name.trim(), url: form.url.trim(), icon: form.icon.trim(), updatedAt: now }
-          : app
-      );
-      saveApps(updated);
-      setEditingId(null);
-    } else {
-      const newApp: AppItem = {
-        id: uuidv4(),
-        name: form.name.trim(),
-        url: form.url.trim(),
-        icon: form.icon.trim(),
-        createdAt: now,
-        updatedAt: now,
-      };
-      saveApps([...apps, newApp]);
-    }
-    setForm({ name: '', url: '', icon: '' });
-  };
-
-  const handleDelete = (id: string) => {
-    const updated = apps.filter(app => app.id !== id);
-    saveApps(updated);
-  };
-
-  const handleEdit = (id: string) => {
-    const app = apps.find(app => app.id === id);
-    if (app) {
-      setForm({ name: app.name, url: app.url, icon: app.icon });
-      setEditingId(id);
-    }
-  };
-
-  useEffect(() => { fetchApps(); }, []);
 
   return (
-    <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">App 管理後台</h1>
-      <div className="space-y-2 mb-6">
-        <input placeholder="名稱" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="border p-2 w-full" />
-        <input placeholder="網址" value={form.url} onChange={e => setForm({ ...form, url: e.target.value })} className="border p-2 w-full" />
-        <input placeholder="圖示網址" value={form.icon} onChange={e => setForm({ ...form, icon: e.target.value })} className="border p-2 w-full" />
-        <button onClick={handleAddOrUpdate} className="bg-green-500 text-white px-4 py-2 rounded">
-          {editingId ? '更新卡片' : '新增卡片'}
-        </button>
-      </div>
-      <ul className="space-y-4">
-        {apps.map(app => (
-          <li key={app.id} className="border p-4 rounded-lg">
-            <div className="flex items-center space-x-4">
-              <img src={app.icon} alt={app.name} className="w-12 h-12 rounded shadow" />
-              <div className="flex-1">
-                <p className="font-bold">{app.name}</p>
-                <a href={app.url} className="text-blue-600 text-sm" target="_blank" rel="noopener noreferrer">{app.url}</a>
-              </div>
-              <div className="flex space-x-2">
-                <button onClick={() => handleEdit(app.id)} className="text-blue-600">編輯</button>
-                <button onClick={() => handleDelete(app.id)} className="text-red-600">刪除</button>
-              </div>
-            </div>
-          </li>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">後台管理系統</h1>
+      <label className="block mb-2 text-sm">選擇流量來源</label>
+      <select
+        className="mb-6 border p-2 rounded"
+        value={selected.key}
+        onChange={(e) => {
+          const found = sources.find(s => s.key === e.target.value);
+          if (found) setSelected(found);
+        }}
+      >
+        {sources.map(opt => (
+          <option key={opt.key} value={opt.key}>{opt.label}</option>
         ))}
-      </ul>
+      </select>
+
+      <button onClick={addApp} className="mb-4 bg-blue-600 text-white px-4 py-2 rounded">新增 App</button>
+
+      {loading ? (
+        <p>載入中...</p>
+      ) : (
+        <div className="space-y-4">
+          {apps.map(app => (
+            <div key={app.id} className="border p-4 rounded bg-white text-black">
+              <input
+                value={app.name}
+                onChange={(e) => updateField(app.id, 'name', e.target.value)}
+                placeholder="名稱"
+                className="block w-full mb-2 border p-1"
+              />
+              <input
+                value={app.url}
+                onChange={(e) => updateField(app.id, 'url', e.target.value)}
+                placeholder="下載連結"
+                className="block w-full mb-2 border p-1"
+              />
+              <input
+                value={app.icon}
+                onChange={(e) => updateField(app.id, 'icon', e.target.value)}
+                placeholder="圖標網址"
+                className="block w-full mb-2 border p-1"
+              />
+              <button onClick={() => removeApp(app.id)} className="text-red-600 text-sm">刪除</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <button onClick={saveApps} className="mt-6 bg-green-600 text-white px-4 py-2 rounded">儲存</button>
     </div>
   );
 }
