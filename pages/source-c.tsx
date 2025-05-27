@@ -12,12 +12,8 @@ interface AppItem {
 export default function SourceB() {
   const [apps, setApps] = useState<AppItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const mobile = window.innerWidth < 768;
-    setIsMobile(mobile);
-
     fetch('https://api.jsonbin.io/v3/b/683488908960c979a5a157eb', {
       headers: {
         'X-Master-Key': '$2a$10$aIekbx96Mq.yKSA22FzLse2LHFypzqYOo2o63Rd/aLRDV1U5Cw/nq'
@@ -33,12 +29,10 @@ export default function SourceB() {
       });
   }, []);
 
-  if (isMobile === null) return <div className="text-center mt-20 text-gray-400">載入中...</div>;
-  if (!isMobile) return <p className="text-center mt-20 text-gray-400">请使用手机设备浏览此页面</p>;
 
   return (
     <div className="min-h-screen bg-black text-white py-6 px-4">
-      <h1 className="text-2xl font-bold text-center mb-6">🔥 熱門 App 精選牆 - Source B 🔥</h1>
+      <h1 className="text-2xl font-bold text-center mb-6">🔥 熱門 App 精選牆 🔥</h1>
       {loading ? <p className="text-center text-gray-400">正在載入 App 清單...</p> : (
         <div className="flex flex-wrap gap-4 justify-between">
           {apps.map(app => (
