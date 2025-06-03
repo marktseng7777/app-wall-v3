@@ -43,6 +43,7 @@ export async function getServerSideProps() {
     });
 
     if (!res.ok) throw new Error('Fetch failed');
+
     const data = await res.json();
 
     const sorted = [...(data.record || [])].sort(
@@ -55,7 +56,7 @@ export async function getServerSideProps() {
       }
     };
   } catch (err) {
-    console.error('Error loading JSONBin:', err);
+    console.error('Error loading JSONBin (Source B):', err);
     return {
       props: {
         apps: []
