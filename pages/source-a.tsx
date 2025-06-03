@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import AppCard from '../components/AppCard';
 
 interface AppItem {
