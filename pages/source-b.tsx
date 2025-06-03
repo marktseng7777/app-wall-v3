@@ -9,31 +9,16 @@ interface AppItem {
   updatedAt: string;
 }
 
-export default function SourceB() {
-  const [apps, setApps] = useState<AppItem[]>([]);
-  const [loading, setLoading] = useState(true);
+interface Props {
+  apps: AppItem[];
+}
 
-  useEffect(() => {
-    fetch('https://api.jsonbin.io/v3/b/683488908960c979a5a157eb', {
-      headers: {
-        'X-Master-Key': '$2a$10$aIekbx96Mq.yKSA22FzLse2LHFypzqYOo2o63Rd/aLRDV1U5Cw/nq'
-      }
-    })
-      .then(res => res.json())
-      .then(data => {
-        const sorted = [...(data.record || [])].sort(
-          (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-        );
-        setApps(sorted);
-        setLoading(false);
-      });
-  }, []);
-
+export default function SourceB({ apps }: Props) {
   return (
     <div className="min-h-screen bg-black text-white py-6 px-4">
-      <h1 className="text-2xl font-bold text-center mb-6">🔥 熱門 App 精選牆 🔥</h1>
-      {loading ? (
-        <p className="text-center text-gray-400">正在載入 App 清單...</p>
+      <h1 className="text-2xl font-bold text-center mb-6">🔥 熱門 App 精選牆 - Source B 🔥</h1>
+      {apps.length === 0 ? (
+        <p className="text-center text-gray-400">沒有可用的 App</p>
       ) : (
         <div className="flex flex-wrap justify-start -mx-1">
           {apps.map(app => (
@@ -47,4 +32,34 @@ export default function SourceB() {
       )}
     </div>
   );
+}
+
+export async function getServerSideProps() {
+  try {
+    const res = await fetch('https://api.jsonbin.io/v3/b/683488908960c979a5a157eb', {
+      headers: {
+        'X-Master-Key': '$2a$10$aIekbx96Mq.yKSA22FzLse2LHFypzqYOo2o63Rd/aLRDV1U5Cw/nq'
+      }
+    });
+
+    if (!res.ok) throw new Error('Fetch failed');
+    const data = await res.json();
+
+    const sorted = [...(data.record || [])].sort(
+      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
+
+    return {
+      props: {
+        apps: sorted
+      }
+    };
+  } catch (err) {
+    console.error('Error loading JSONBin:', err);
+    return {
+      props: {
+        apps: []
+      }
+    };
+  }
 }
