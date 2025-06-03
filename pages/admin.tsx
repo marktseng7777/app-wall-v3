@@ -21,7 +21,7 @@ const MASTER_KEY = '$2a$10$aIekbx96Mq.yKSA22FzLse2LHFypzqYOo2o63Rd/aLRDV1U5Cw/nq
 const sources: SourceOption[] = [
   { key: 'source-a', label: '聯盟 A 流量', binId: '6834589e8960c979a5a1462a' },
   { key: 'source-b', label: '聯盟 B 流量', binId: '683488908960c979a5a157eb' },
-  { key: 'source-c', label: 'TikTok 測試', binId: '6834889d8a456b7966a59913' }
+  { key: 'source-c', label: '聯盟 C 流量', binId: '6834889d8a456b7966a59913' }
 ];
 
 export default function Admin() {
